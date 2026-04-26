@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+:root {
+  --color-bg: #FAF8F5;
+  --color-accent: #F97316;
+  --font-sans: var(--font-plus-jakarta-sans), sans-serif;
+}
+
+body {
+  background-color: var(--color-bg);
+  font-family: var(--font-sans);
+}
