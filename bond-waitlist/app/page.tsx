@@ -17,11 +17,9 @@ export default function Home() {
   const [submitted, setSubmitted] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
+  const {register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({ 
+    resolver: zodResolver(schema) 
+  });
 
   async function onSubmit(data: FormData) {
     setServerError(null);
@@ -123,9 +121,9 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-center text-gray-900 mb-14">Meet the team</h2>
             <div className="flex flex-wrap justify-center gap-10">
               {[
-                { name: "Alex Chen", role: "Co-Founder & CEO" },
-                { name: "Jordan Lee", role: "Co-Founder & CTO" },
-                { name: "Sam Rivera", role: "Head of Design" },
+                { name: "Kyle Zheng", role: "Founding Engineer" },
+                { name: "Elton Dong", role: "Founder" },
+                { name: "Maximilian Sawaya", role: "Founding Business Manager" },
               ].map(({ name, role }) => (
                 <div key={name} className="flex flex-col items-center gap-3">
                   <div className="w-24 h-24 rounded-full bg-orange-100 flex items-center justify-center text-3xl font-bold text-orange-500">
