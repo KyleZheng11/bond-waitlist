@@ -5,11 +5,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { City } from "country-state-city";
+
+const cities = City.getCitiesOfCountry("US"); //returns array of all cities in US { name, stateCode, countryCode, latitude, longitude }
 
 const schema = z.object({
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Enter a valid email"),
+  cityState: z.string().min(1, "City, State is required"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -32,6 +36,15 @@ function FadeUp({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 export default function Home() {
   const [submitted, setSubmitted] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+
+  const [cityQuery, setCityQuery] = useState("");
+  const filteredCities = cityQuery.length > 0 
+    ? (cities ?? [])
+      .filter(c => c.name.toLowerCase().startsWith(cityQuery.toLowerCase()))
+      .slice(0, 10) 
+    : [];
+
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
 
   const {
     register,
@@ -164,7 +177,7 @@ export default function Home() {
           </FadeUp>
         </section>
 
-        {/* Team */}
+        {/* Team
         <section className="bg-white py-20">
           <div className="max-w-6xl mx-auto px-6">
             <FadeUp>
@@ -174,7 +187,7 @@ export default function Home() {
               {[
                 { name: "Kyle Zheng", role: "Founding Engineer" },
                 { name: "Elton Dong", role: "Founder" },
-                { name: "Maximilian Sawaya", role: "Founding Business Manager" },
+                { name: "Ito Sawaya", role: "Founding Business Manager" },
               ].map(({ name, role }, i) => (
                 <FadeUp key={name} delay={i * 0.1}>
                   <motion.div
@@ -194,7 +207,7 @@ export default function Home() {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Signup Form */}
         <section id="signup" className="max-w-lg mx-auto px-6 py-24">
@@ -252,6 +265,37 @@ export default function Home() {
                     <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
                   )}
                 </div>
+
+                <div className="relative">
+                  <input
+                    placeholder="City"
+                    value={cityQuery}
+                    onChange={(e) => { setCityQuery(e.target.value); setShowCityDropdown(true); }}
+                    onFocus={() => { if (cityQuery.length > 0) setShowCityDropdown(true); }}
+                    onBlur={() => setTimeout(() => setShowCityDropdown(false), 150)}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400 transition-shadow"
+                  />
+                  {showCityDropdown && filteredCities.length > 0 && (
+                    <ul className="absolute z-10 w-full bg-white border border-gray-200 rounded-xl mt-1 shadow-lg max-h-60 overflow-y-auto">
+                      {filteredCities.map((city) => (
+                        <li
+                          key={`${city.name}-${city.stateCode}`}
+                          onMouseDown={() => {
+                            setCityQuery(`${city.name}, ${city.stateCode}`);
+                            setShowCityDropdown(false);
+                          }}
+                          className="px-4 py-2 cursor-pointer hover:bg-orange-50 text-gray-800 text-sm"
+                        >
+                          {city.name}, {city.stateCode}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {errors.cityState && (
+                    <p className="mt-1 text-xs text-red-500">{errors.cityState.message}</p>
+                  )}
+                </div>
+                
                 {serverError && (
                   <p className="text-sm text-red-500 text-center">{serverError}</p>
                 )}
