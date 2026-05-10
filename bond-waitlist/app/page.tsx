@@ -13,7 +13,7 @@ const schema = z.object({
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Enter a valid email"),
-  cityState: z.string().min(1, "City, State is required"),
+  city_state: z.string().min(1, "City, State is required"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -49,8 +49,9 @@ export default function Home() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
+  } = useForm<FormData>({ resolver: zodResolver(schema), defaultValues: { city_state: "" } });
 
   async function onSubmit(data: FormData) {
     setServerError(null);
@@ -226,7 +227,7 @@ export default function Home() {
                 transition={{ type: "spring", stiffness: 200 }}
                 className="bg-orange-50 border border-orange-200 rounded-2xl p-8 text-center"
               >
-                <span className="text-4xl">🎉</span>
+                <span className="text-4xl">👏</span>
                 <p className="mt-4 text-lg font-semibold text-gray-900">You&apos;re on the list!</p>
                 <p className="mt-2 text-gray-500">We&apos;ll reach out when it&apos;s time to Bond.</p>
               </motion.div>
@@ -268,9 +269,9 @@ export default function Home() {
 
                 <div className="relative">
                   <input
-                    placeholder="City"
+                    placeholder="City, State"
                     value={cityQuery}
-                    onChange={(e) => { setCityQuery(e.target.value); setShowCityDropdown(true); }}
+                    onChange={(e) => { setCityQuery(e.target.value); setValue("city_state", e.target.value, { shouldValidate: true }); setShowCityDropdown(true); }}
                     onFocus={() => { if (cityQuery.length > 0) setShowCityDropdown(true); }}
                     onBlur={() => setTimeout(() => setShowCityDropdown(false), 150)}
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400 transition-shadow"
@@ -281,7 +282,9 @@ export default function Home() {
                         <li
                           key={`${city.name}-${city.stateCode}`}
                           onMouseDown={() => {
-                            setCityQuery(`${city.name}, ${city.stateCode}`);
+                            const selected = `${city.name}, ${city.stateCode}`;
+                            setCityQuery(selected);
+                            setValue("city_state", selected, { shouldValidate: true });
                             setShowCityDropdown(false);
                           }}
                           className="px-4 py-2 cursor-pointer hover:bg-orange-50 text-gray-800 text-sm"
@@ -291,8 +294,8 @@ export default function Home() {
                       ))}
                     </ul>
                   )}
-                  {errors.cityState && (
-                    <p className="mt-1 text-xs text-red-500">{errors.cityState.message}</p>
+                  {errors.city_state && (
+                    <p className="mt-1 text-xs text-red-500">{errors.city_state.message}</p>
                   )}
                 </div>
                 
@@ -306,7 +309,7 @@ export default function Home() {
                   whileTap={!isSubmitting ? { scale: 0.98 } : {}}
                   className="bg-orange-500 text-white font-semibold py-3.5 rounded-xl hover:bg-orange-600 transition-colors disabled:opacity-60"
                 >
-                  {isSubmitting ? "Joining..." : "Join the waitlist"}
+                  {isSubmitting ? "Joining..." : "Sign up / Join the waitlist"}
                 </motion.button>
               </form>
             )}
