@@ -7,6 +7,7 @@ const schema = z.object({
   last_name: z.string().min(1),
   email: z.string().email(),
   city_state: z.string().min(1),
+  profession: z.string().min(1),
 });
 
 const supabase = createClient(
@@ -22,11 +23,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   }
 
-  const { first_name, last_name, email, city_state } = parsed.data;
+  const { first_name, last_name, email, city_state, profession } = parsed.data;
 
   const { error } = await supabase
     .from("waitlist")
-    .insert({ first_name, last_name, email, city_state });
+    .insert({ first_name, last_name, email, city_state, profession });
 
   if (error) {
     if (error.code === "23505") {
